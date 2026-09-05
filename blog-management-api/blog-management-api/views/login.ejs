@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Blog Login</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background:
+            radial-gradient(circle at top left, #7c3aed 0%, transparent 35%),
+            radial-gradient(circle at bottom right, #2563eb 0%, transparent 35%),
+            linear-gradient(135deg, #0f172a, #1e1b4b);
+        overflow: hidden;
+    }
+
+    /* Background circles */
+    body::before,
+    body::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(2px);
+        opacity: 0.25;
+    }
+
+    body::before {
+        width: 300px;
+        height: 300px;
+        background: #a855f7;
+        top: -100px;
+        left: -80px;
+    }
+
+    body::after {
+        width: 350px;
+        height: 350px;
+        background: #3b82f6;
+        bottom: -150px;
+        right: -100px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 430px;
+        padding: 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .login-card {
+        background: rgba(255, 255, 255, 0.10);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 24px;
+        padding: 42px 38px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+        animation: slideUp 0.7s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .logo {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 20px;
+        border-radius: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+    }
+
+    h1 {
+        text-align: center;
+        color: white;
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #cbd5e1;
+        font-size: 14px;
+        margin-bottom: 32px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group label {
+        display: block;
+        color: #e2e8f0;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 17px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px 15px 14px 45px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    input::placeholder {
+        color: #94a3b8;
+    }
+
+    input:focus {
+        border-color: #8b5cf6;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+    }
+
+    .login-btn {
+        width: 100%;
+        padding: 14px;
+        margin-top: 8px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+    }
+
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(79, 70, 229, 0.45);
+    }
+
+    .login-btn:active {
+        transform: translateY(0);
+    }
+
+    .login-btn.loading {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    #message {
+        margin-top: 18px;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 13px;
+        display: none;
+    }
+
+    .success {
+        display: block !important;
+        background: rgba(34, 197, 94, 0.15);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+
+    .error {
+        display: block !important;
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 28px 0 20px;
+        color: #94a3b8;
+        font-size: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: "";
+        height: 1px;
+        flex: 1;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .footer-text {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
+    .footer-text span {
+        color: #c4b5fd;
+        font-weight: 600;
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 15px;
+        }
+
+        .login-card {
+            padding: 35px 25px;
+        }
+
+        h1 {
+            font-size: 25px;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<div class="container">
+
+    <div class="login-card">
+
+        <div class="logo">
+            ✍️
+        </div>
+
+        <h1>Welcome Back</h1>
+
+        <p class="subtitle">
+            Sign in to continue to your blog dashboard
+        </p>
+
+        <form id="loginForm">
+
+            <div class="input-group">
+
+                <label for="email">Email Address</label>
+
+                <div class="input-wrapper">
+                    <span class="input-icon">✉️</span>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="password">Password</label>
+
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginBtn"
+            >
+                Login to Dashboard
+            </button>
+
+        </form>
+
+        <div id="message"></div>
+
+        <div class="divider">
+            <span>SECURE LOGIN</span>
+        </div>
+
+        <p class="footer-text">
+            Your account is protected with
+            <span>JWT Authentication</span>
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+    const loginBtn = document.getElementById("loginBtn");
+
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        // Button loading state
+        loginBtn.classList.add("loading");
+        loginBtn.innerText = "Logging in...";
+        message.className = "";
+        message.style.display = "none";
+
+        try {
+
+            const response = await fetch(
+                "/api/auth/login",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+
+                localStorage.setItem(
+                    "token",
+                    data.token
+                );
+
+                message.className = "success";
+                message.innerHTML = "✓ Login successful! Redirecting...";
+                message.style.display = "block";
+
+                setTimeout(() => {
+                    window.location.href = "/dashboard";
+                }, 800);
+
+            } else {
+
+                message.className = "error";
+                message.innerHTML =
+                    "✕ " + (data.message || "Invalid email or password");
+
+                message.style.display = "block";
+
+                loginBtn.classList.remove("loading");
+                loginBtn.innerText = "Login to Dashboard";
+            }
+
+        } catch (error) {
+
+            message.className = "error";
+            message.innerHTML =
+                "✕ Unable to connect to the server.";
+
+            message.style.display = "block";
+
+            loginBtn.classList.remove("loading");
+            loginBtn.innerText = "Login to Dashboard";
+        }
+
+    });
+
+</script>
+```
+
+</body>
+
+</html>
